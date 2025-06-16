@@ -142,6 +142,7 @@ export class CanvasPointer {
    * @param e The `pointerdown` event
    */
   down(e: CanvasPointerEvent): void {
+    console.log("CanvasPointer.down", e)
     this.reset()
     this.eDown = e
     this.pointerId = e.pointerId
@@ -154,7 +155,14 @@ export class CanvasPointer {
    */
   move(e: CanvasPointerEvent): void {
     const { eDown } = this
+    console.log("CanvasPointer.move", { e, eDown })
     if (!eDown) return
+
+    // No buttons down, but eDown exists - clean up & leave
+    if (!e.buttons) {
+      this.reset()
+      return
+    }
 
     // Primary button released - treat as pointerup.
     if (!(e.buttons & eDown.buttons)) {
@@ -179,6 +187,7 @@ export class CanvasPointer {
    * @param e The `pointerup` event
    */
   up(e: CanvasPointerEvent): boolean {
+    console.log("CanvasPointer.up", e)
     if (e.button !== this.eDown?.button) return false
 
     this.#completeClick(e)
@@ -188,6 +197,7 @@ export class CanvasPointer {
   }
 
   #completeClick(e: CanvasPointerEvent): void {
+    console.log("CanvasPointer.#completeClick", e)
     const { eDown } = this
     if (!eDown) return
 
@@ -256,6 +266,7 @@ export class CanvasPointer {
    * state is cleared.
    */
   reset(): void {
+    console.log("CanvasPointer.reset")
     // The setter executes the callback before clearing it
     this.finally = undefined
     delete this.onClick
