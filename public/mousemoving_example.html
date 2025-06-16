@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mouse Trail Drawer</title>
+  <style>
+      html, body {
+          margin: 0;
+          padding: 0;
+          overflow: hidden;
+          height: 100%;
+          background: black;
+      }
+      canvas {
+          display: block;
+          background: black;
+      }
+  </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<script>
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  let lastMouseMoveEvent = null;
+  let betweenDownAndUp = false;
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  function drawCircle(x, y, radius, color) {
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.fill();
+  }
+
+  function drawLine(x1, y1, x2, y2, color, width = 1) {
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.stroke();
+  }
+
+  canvas.addEventListener('mousedown', (e) => {
+    betweenDownAndUp = true;
+    drawCircle(e.clientX, e.clientY, 2, 'blue');
+  });
+
+  canvas.addEventListener('mouseup', (e) => {
+    betweenDownAndUp = false;
+    drawCircle(e.clientX, e.clientY, 2, 'green');
+  });
+
+  canvas.addEventListener('mousemove', (e) => {
+    if (lastMouseMoveEvent) {
+      let color = 'red';
+      let width = 1;
+
+      if (e.buttons === 1) {
+        color = 'green';
+      } else if (betweenDownAndUp && e.buttons === 0) {
+        width = 5; // Make it obvious
+      }
+
+      drawLine(
+        lastMouseMoveEvent.clientX,
+        lastMouseMoveEvent.clientY,
+        e.clientX,
+        e.clientY,
+        color,
+        width
+      );
+    }
+
+    lastMouseMoveEvent = e;
+  });
+</script>
+</body>
+</html>
